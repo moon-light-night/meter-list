@@ -9,6 +9,7 @@ import {
 import type { Area } from '@/entities/area/model';
 import { Button } from '@/components/ui/button';
 import { Modal } from '@/components/ui/modal';
+import { Loader } from '@/components/ui/loader/Loader';
 import { MeterRow } from '@/components/meter';
 
 interface MetersTableProps {
@@ -16,6 +17,7 @@ interface MetersTableProps {
   offset: number;
   areasById: Record<string, Area>;
   deletingMeterIds: readonly string[];
+  isLoading?: boolean;
   onDelete: (id: string) => void | Promise<void>;
 }
 
@@ -75,6 +77,7 @@ export const MetersTable = observer(function MetersTable({
   offset,
   areasById,
   deletingMeterIds,
+  isLoading = false,
   onDelete,
 }: MetersTableProps) {
   const [meterToDelete, setMeterToDelete] = useState<Meter | null>(null);
@@ -136,7 +139,7 @@ export const MetersTable = observer(function MetersTable({
 
   return (
     <>
-      <div className="h-full min-h-0 w-full overflow-hidden bg-white shadow-sm">
+      <div className="relative h-full min-h-0 w-full overflow-hidden bg-white shadow-sm">
         <div className="h-full min-h-0 overflow-auto">
           <table className="w-full min-w-[920px] md:min-w-full">
             <thead className="sticky top-0 z-20">
@@ -154,6 +157,12 @@ export const MetersTable = observer(function MetersTable({
             </tbody>
           </table>
         </div>
+
+        {isLoading && (
+          <div className="absolute inset-0 z-30 flex items-center justify-center bg-white/70 pointer-events-auto">
+            <Loader />
+          </div>
+        )}
       </div>
 
       <Modal

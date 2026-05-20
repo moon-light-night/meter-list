@@ -1,4 +1,4 @@
-COMPOSE = docker compose
+COMPOSE = docker compose --env-file .env -f docker/docker-compose.yml
 
 .PHONY: up down restart logs build rebuild ps
 

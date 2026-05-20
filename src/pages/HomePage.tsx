@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Droplets } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
 import { StoreProvider, useStore } from '@/store';
-import { Pagination } from '@/components/paination';
+import { Pagination } from '@/components/pagination';
 import { Loader } from '@/components/ui/loader/Loader';
 import { ErrorMessage } from '@/components/ui/error-message/ErrorMessage';
 import { Card } from '@/components/ui/card';
@@ -41,9 +41,9 @@ const HomePageContent = observer(() => {
     [hasLoadedInitial, store.error, store.isMetersLoading, store.meters.length]
   );
 
-  const showLoader = useMemo(
-    () => store.isMetersLoading || !hasLoadedInitial,
-    [hasLoadedInitial, store.isMetersLoading]
+  const showInitialLoader = useMemo(
+    () => !hasLoadedInitial,
+    [hasLoadedInitial]
   );
 
   const handlePrevPage = useCallback(() => {
@@ -84,7 +84,7 @@ const HomePageContent = observer(() => {
                 <div className="flex items-start p-3 sm:p-6">
                   <ErrorMessage message={store.error} />
                 </div>
-              ) : showLoader ? (
+              ) : showInitialLoader ? (
                 <div className="flex h-full min-h-[260px] items-center justify-center sm:min-h-[320px]">
                   <Loader />
                 </div>
@@ -104,6 +104,7 @@ const HomePageContent = observer(() => {
                   offset={store.offset}
                   areasById={store.areasById}
                   deletingMeterIds={store.deletingMeterIds}
+                  isLoading={store.isMetersLoading}
                   onDelete={handleDeleteMeter}
                 />
               )}
