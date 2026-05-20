@@ -1,0 +1,11 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: meters-frontend
+    environment:
+      VITE_APP_API_URL: ${VITE_APP_API_URL:?VITE_APP_API_URL is required}
+    ports:
+      - '${VITE_APP_FE_PORT:-5173}:80'
+    restart: unless-stopped
