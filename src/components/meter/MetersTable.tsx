@@ -82,17 +82,11 @@ export const MetersTable = observer(function MetersTable({
 }: MetersTableProps) {
   const [meterToDelete, setMeterToDelete] = useState<Meter | null>(null);
 
-  const deletingMeterIdsSet = useMemo(
-    () => new Set(deletingMeterIds),
-    [deletingMeterIds]
-  );
-
   const isModalOpen = Boolean(meterToDelete);
 
-  const isDeletingSelectedMeter = useMemo(
-    () => Boolean(meterToDelete && deletingMeterIdsSet.has(meterToDelete.id)),
-    [deletingMeterIdsSet, meterToDelete]
-  );
+  const isDeletingSelectedMeter = meterToDelete
+    ? deletingMeterIds.includes(meterToDelete.id)
+    : false;
 
   const handleOpenDeleteModal = useCallback((meter: Meter) => {
     setMeterToDelete(meter);
@@ -107,13 +101,13 @@ export const MetersTable = observer(function MetersTable({
   }, [isDeletingSelectedMeter]);
 
   const handleConfirmDelete = useCallback(async () => {
-    if (!meterToDelete) {
+    if (!meterToDelete || isDeletingSelectedMeter) {
       return;
     }
 
     await onDelete(meterToDelete.id);
     setMeterToDelete(null);
-  }, [meterToDelete, onDelete]);
+  }, [meterToDelete, isDeletingSelectedMeter, onDelete]);
 
   const tableRows = useMemo(
     () =>
@@ -129,12 +123,41 @@ export const MetersTable = observer(function MetersTable({
             offset={offset}
             area={area}
             areaId={areaId}
-            isDeleting={deletingMeterIdsSet.has(meter.id)}
+            isDeleting={deletingMeterIds.includes(meter.id)}
             onDelete={handleOpenDeleteModal}
           />
         );
       }),
-    [areasById, deletingMeterIdsSet, handleOpenDeleteModal, meters, offset]
+    [meters, areasById, offset, deletingMeterIds, handleOpenDeleteModal]
+  );
+
+  const modalFooter = useMemo(
+    () => (
+      <>
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={handleCloseModal}
+          disabled={isDeletingSelectedMeter}
+          className="w-full sm:w-auto"
+        >
+          {DELETE_METER_MODAL_TEXT.CANCEL}
+        </Button>
+
+        <Button
+          type="button"
+          variant="ghost"
+          onClick={handleConfirmDelete}
+          disabled={isDeletingSelectedMeter}
+          className="w-full bg-[#C53030] text-white hover:bg-[#9B2C2C] sm:w-auto"
+        >
+          {isDeletingSelectedMeter
+            ? DELETE_METER_MODAL_TEXT.DELETING
+            : DELETE_METER_MODAL_TEXT.DELETE}
+        </Button>
+      </>
+    ),
+    [handleCloseModal, handleConfirmDelete, isDeletingSelectedMeter]
   );
 
   return (
@@ -171,31 +194,7 @@ export const MetersTable = observer(function MetersTable({
         onClose={handleCloseModal}
         closeOnOverlayClick={!isDeletingSelectedMeter}
         isCloseDisabled={isDeletingSelectedMeter}
-        footer={
-          <>
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={handleCloseModal}
-              disabled={isDeletingSelectedMeter}
-              className="w-full sm:w-auto"
-            >
-              {DELETE_METER_MODAL_TEXT.CANCEL}
-            </Button>
-
-            <Button
-              type="button"
-              variant="ghost"
-              onClick={handleConfirmDelete}
-              disabled={isDeletingSelectedMeter}
-              className="w-full bg-[#C53030] text-white hover:bg-[#9B2C2C] sm:w-auto"
-            >
-              {isDeletingSelectedMeter
-                ? DELETE_METER_MODAL_TEXT.DELETING
-                : DELETE_METER_MODAL_TEXT.DELETE}
-            </Button>
-          </>
-        }
+        footer={modalFooter}
       >
         {meterToDelete && (
           <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-[#1D2432]">

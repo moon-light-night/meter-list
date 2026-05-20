@@ -13,9 +13,11 @@ FROM nginx:1.27-alpine AS production
 
 COPY nginx/nginx.conf /etc/nginx/templates/default.conf.template
 COPY docker/check-env.sh /docker-entrypoint.d/00-check-env.sh
+COPY docker/normalize-api-url.envsh /docker-entrypoint.d/00-normalize-api-url.envsh
 COPY --from=build /app/dist /usr/share/nginx/html
 
-RUN chmod +x /docker-entrypoint.d/00-check-env.sh
+COPY docker/check-env.sh /docker-entrypoint.d/00-check-env.sh
+RUN chmod +x /docker-entrypoint.d/00-normalize-api-url.envsh
 
 EXPOSE 80
 

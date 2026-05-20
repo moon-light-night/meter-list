@@ -1,0 +1,12 @@
+#!/bin/sh
+set -eu
+
+: "${VITE_APP_API_URL:?Error: VITE_APP_API_URL environment variable is required}"
+
+case "$VITE_APP_API_URL" in
+  http://*)
+    export VITE_APP_API_URL="https://${VITE_APP_API_URL#http://}"
+    ;;
+esac
+
+export VITE_APP_API_URL="${VITE_APP_API_URL%/}"

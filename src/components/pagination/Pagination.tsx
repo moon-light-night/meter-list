@@ -86,13 +86,16 @@ export const Pagination = memo(function Pagination({
     [currentPage, pagesCount]
   );
 
+  const isPrevDisabled = isLoading || currentPage === PAGINATION.START_PAGE;
+  const isNextDisabled = isLoading || currentPage + 1 >= pagesCount;
+
   return (
     <div className="flex items-center justify-end gap-2">
       <Button
         variant="outline"
         size="sm"
         onClick={onPrev}
-        disabled={isLoading || currentPage === PAGINATION.START_PAGE}
+        disabled={isPrevDisabled}
         className={navigationButtonClassName}
       >
         <ChevronLeft className="h-5 w-5 text-slate-700 group-hover:text-slate-700" />
@@ -129,7 +132,7 @@ export const Pagination = memo(function Pagination({
         variant="outline"
         size="sm"
         onClick={onNext}
-        disabled={isLoading || currentPage + 1 >= pagesCount}
+        disabled={isNextDisabled}
         className={navigationButtonClassName}
       >
         <ChevronRight className="h-5 w-5 text-slate-700 group-hover:text-slate-700" />

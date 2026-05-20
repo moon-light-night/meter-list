@@ -44,7 +44,7 @@ const request = async <T>(
   try {
     return text ? (JSON.parse(text) as T) : ({} as T);
   } catch {
-    throw new Error('Неверный ответ сервера');
+    throw new Error('Некорректный ответ');
   }
 };
 
